@@ -10,12 +10,12 @@
   function fail(message) {
     const el = $("stageStatus");
     el.hidden = false;
-    el.innerHTML = '<p class="status-title">The simulation couldn’t start</p><p>' + esc(message) + '</p><button type="button" class="btn" id="reloadBtn">Reload</button>';
+    el.innerHTML = '<p class="status-title">The graph couldn’t load</p><p>' + esc(message) + '</p><button type="button" class="btn" id="reloadBtn">Reload</button>';
     $("reloadBtn").addEventListener("click", () => location.reload());
   }
 
   if (!X || !X.model) {
-    fail((X && X.error) || "The simulation files didn’t load. Keep data.js and sim.js next to index.html.");
+    fail((X && X.error) || "The data files didn’t load. Keep data.js and sim.js next to index.html.");
     return;
   }
   try { init(X.model); } catch (err) { console.error(err); fail(err && err.message ? err.message : String(err)); }
@@ -523,7 +523,7 @@
       $("metricsBody").appendChild(tr);
       return { key: m[0], o: tr.children[1], p: tr.children[2], d: tr.children[3] };
     });
-    $("metricsFoot").textContent = M.queries.length + " simulated questions at the selected index level";
+    $("metricsFoot").textContent = M.queries.length + " questions at the selected index level";
 
     function tween(el, value) {
       const from = el._v == null ? value : el._v;
@@ -713,13 +713,6 @@
     });
 
     /* ---------- events: menus ---------- */
-    const about = $("about"), aboutBtn = $("aboutBtn");
-    $("aboutFacts").innerHTML =
-      "<span>Entities shown</span><b>" + int(N.length) + "</b><span>Relationships shown</span><b>" + int(E.length) +
-      "</b><span>Simulated questions</span><b>" + M.queries.length + "</b><span>Summary budget</span><b>" + int(B) + " tokens</b>" +
-      "<span>Communities retrieved per question</span><b>" + M.K + "</b>";
-    function toggleAbout(open) { about.hidden = !open; aboutBtn.setAttribute("aria-expanded", String(open)); }
-    aboutBtn.addEventListener("click", () => toggleAbout(about.hidden));
     function openMenu(open) {
       qMenu.hidden = !open;
       qTrigger.setAttribute("aria-expanded", String(open));
@@ -741,12 +734,10 @@
     document.addEventListener("pointerdown", (ev) => {
       const t = ev.target instanceof Element ? ev.target : null;
       if (!qMenu.hidden && !(t && t.closest(".question"))) openMenu(false);
-      if (!about.hidden && !(t && t.closest("#about, #aboutBtn"))) toggleAbout(false);
     });
     document.addEventListener("keydown", (ev) => {
       if (ev.key === "Escape") {
         if (!qMenu.hidden) { openMenu(false); qTrigger.focus(); }
-        else if (!about.hidden) { toggleAbout(false); aboutBtn.focus(); }
         else if (S.sel) { S.sel = null; S.hot = null; renderContext(); requestDraw(); }
         return;
       }
